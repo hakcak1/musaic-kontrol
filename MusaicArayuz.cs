@@ -61,6 +61,62 @@ namespace MusaicKontrol
             return p;
         }
 
+        // Uygulama logosu: turuncu→pembe degrade yuvarlak kare, beyaz kalın "M" ve ses dalgaları.
+        // Simge dosyası (musaic.ico) da bu çizimden üretilir.
+        public static void DrawLogo(Graphics g, RectangleF r)
+        {
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            float s = r.Width / 256f;
+            Func<float, float, PointF> P = (x, y) => new PointF(r.X + x * s, r.Y + y * s);
+
+            using (var path = Round(r, 58 * s))
+            {
+                using (var bg = new LinearGradientBrush(new PointF(r.Left, r.Top), new PointF(r.Right, r.Bottom),
+                                                        Color.FromArgb(255, 150, 60), Color.FromArgb(232, 36, 98)))
+                    g.FillPath(bg, path);
+                // üstte hafif parlama
+                var old = g.Clip;
+                g.SetClip(path);
+                using (var shine = new LinearGradientBrush(new PointF(r.Left, r.Top - 1), new PointF(r.Left, r.Top + r.Height * 0.6f),
+                                                           Color.FromArgb(70, 255, 255, 255), Color.FromArgb(0, 255, 255, 255)))
+                {
+                    shine.WrapMode = WrapMode.TileFlipXY;
+                    g.FillRectangle(shine, r.X, r.Y, r.Width, r.Height * 0.55f);
+                }
+                g.Clip = old;
+            }
+
+            // M'nin gölgesi
+            var mPts = new[] { P(56, 192), P(56, 74), P(122, 154), P(188, 74), P(188, 192) };
+            var shPts = mPts.Select(p => new PointF(p.X + 5 * s, p.Y + 7 * s)).ToArray();
+            using (var shadow = new Pen(Color.FromArgb(60, 90, 0, 30), 34 * s) { LineJoin = LineJoin.Round, StartCap = LineCap.Round, EndCap = LineCap.Round })
+                g.DrawLines(shadow, shPts);
+            using (var pen = new Pen(Color.White, 34 * s) { LineJoin = LineJoin.Round, StartCap = LineCap.Round, EndCap = LineCap.Round })
+                g.DrawLines(pen, mPts);
+
+            // Ses dalgaları (sağ üst)
+            if (r.Width >= 24)
+                for (int i = 0; i < 2; i++)
+                {
+                    float rad = (26 + i * 22) * s;
+                    var c = P(194, 62);
+                    using (var wp = new Pen(Color.FromArgb(i == 0 ? 235 : 160, 255, 255, 255), 9 * s) { StartCap = LineCap.Round, EndCap = LineCap.Round })
+                        g.DrawArc(wp, c.X - rad, c.Y - rad, rad * 2, rad * 2, -60, 75);
+                }
+        }
+
+        public static Bitmap LogoBitmap(int size)
+        {
+            var bmp = new Bitmap(size, size, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.Transparent);
+                DrawLogo(g, new RectangleF(0, 0, size, size));
+            }
+            return bmp;
+        }
+
         public static Label Lbl(Control parent, string text, Font font, Color color, int x, int y, int w = 0, int h = 0)
         {
             var l = new Label { Text = text, Font = font, ForeColor = color, BackColor = Color.Transparent, Location = new Point(x, y) };
@@ -207,6 +263,22 @@ namespace MusaicKontrol
             using (var p = Theme.Round(new RectangleF(pad, cy - 3, Math.Max(6, fx - pad), 6), 3)) g.FillPath(fb, p);
             float tr = (hover || drag) ? 9 : 7;
             using (var wb = new SolidBrush(Color.White)) g.FillEllipse(wb, fx - tr, cy - tr, tr * 2, tr * 2);
+        }
+    }
+
+    // Uygulama logosunu çizen küçük kutu
+    class LogoBox : Control
+    {
+        public LogoBox()
+        {
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint |
+                     ControlStyles.ResizeRedraw | ControlStyles.SupportsTransparentBackColor, true);
+            BackColor = Color.Transparent;
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            Theme.DrawLogo(e.Graphics, new RectangleF(0, 0, Width - 1, Height - 1));
         }
     }
 
@@ -679,8 +751,10 @@ namespace MusaicKontrol
         void BuildSidebar()
         {
             sidebar = new Panel { Dock = DockStyle.Left, Width = 220, BackColor = Theme.Sidebar };
-            var logo = Theme.Lbl(sidebar, "MUSAIC", Theme.F(20f, FontStyle.Bold), Theme.Text, 24, 26);
-            Theme.Lbl(sidebar, "Kontrol Merkezi", Theme.F(9.5f), Theme.Accent, 27, 66);
+            var logo = new LogoBox { Location = new Point(22, 26), Size = new Size(46, 46) };
+            sidebar.Controls.Add(logo);
+            Theme.Lbl(sidebar, "MUSAIC", Theme.F(17f, FontStyle.Bold), Theme.Text, 76, 24);
+            Theme.Lbl(sidebar, "Kontrol Merkezi", Theme.F(9f), Theme.Accent, 79, 54);
 
             string[] names = { "Çal", "Müzik", "Dosyalar", "Ayarlar" };
             string[] icons = { Theme.IcoPlay, Theme.IcoMusic, Theme.IcoFolder, Theme.IcoSettings };
