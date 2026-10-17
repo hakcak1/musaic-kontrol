@@ -7,12 +7,12 @@ Amaç: Sürekli açık küçük bir Windows bilgisayar (ör. HP EliteDesk mini) 
 ## 1. Programı indir ve derle
 
 ```bat
-git clone <bu deponun adresi> C:\MusaicKontrol
+git clone https://github.com/hakcak1/musaic-kontrol.git C:\MusaicKontrol
 cd C:\MusaicKontrol
 derle.bat
 ```
 
-Git yoksa: `winget install --id Git.Git -e` (veya Releases sayfasından `MusaicKontrol.exe`'yi `C:\MusaicKontrol` içine indirin).
+Git yoksa: `winget install --id Git.Git -e` (veya https://github.com/hakcak1/musaic-kontrol/releases/latest adresinden `MusaicKontrol.exe`'yi `C:\MusaicKontrol` içine indirin).
 
 ## 2. Sanal ses aygıtı
 
