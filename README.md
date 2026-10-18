@@ -1,80 +1,87 @@
 # Musaic Kontrol
 
-**Musaic MP5 / MP10 / MPL Wi-Fi hoparlörleri için resmi uygulamanın yerini tutan, ücretsiz ve açık kaynak Windows kontrol programı.**
+🌐 **English** · [Türkçe](README.tr.md)
 
-![Musaic Kontrol ekran görüntüsü](docs/ekran-goruntusu.png)
+**A free, open-source Windows app that brings Musaic MP5 / MP10 / MPL Wi-Fi speakers back to life after the official Musaic app was discontinued.**
 
-Musaic şirketi kapandı ve resmi "Musaic" uygulaması artık çalışmıyor. Ama hoparlörlerin içindeki ağ çalar hâlâ sağlam: standart **UPnP/DLNA** ile kontrol edilebiliyor. Bu program onu kullanır.
+![Musaic Kontrol screenshot](docs/ekran-goruntusu.png)
 
-*(English summary at the bottom.)*
+Musaic Ltd. is gone and its official app no longer works, which left many perfectly good hi-fi speakers stuck. The network player inside them is still fine, though: it speaks standard **UPnP/DLNA**. This app uses that to find, control and stream to the speaker — no account, no cloud, no install.
 
-## Özellikler
+> The user interface is currently in **Turkish**. Menu names below are given in Turkish with their English meaning, e.g. **Ayarlar (Settings)**. Translations are welcome — see [Contributing](#contributing).
 
-- **PC sesini hoparlöre gönderme:** YouTube, Spotify, oyunlar… bilgisayarda çalan her şey Wi-Fi üzerinden Musaic'ten çalar.
-- **Spotify ve YouTube Music:** Tek tıkla yalnızca o uygulamanın sesini Musaic'e yönlendirir; oyun, Discord gibi diğer sesler kulaklıkta kalır.
-- **Kayıpsız dosya çalma:** MP3, FLAC, WAV, M4A, OGG… (sürükle-bırak)
-- **Yüksek kalite:** 192 kHz / 24-bit'e kadar yayın, stüdyo kalitesinde örnekleme dönüştürücü (SNR > 105 dB), "maksimum kalite" modu.
-- **Düşük gecikme:** Ayarlanabilir güvenlik payıyla Bluetooth'a yakın gecikme.
-- **Ses seviyesi, sessiz, duraklat/devam** kontrolü.
-- **Sürekli açık müzik merkezi modu:** Windows'la başlama, tepside çalışma, yayını otomatik başlatma ve kopunca kendiliğinden toparlama.
-- Koyu temalı modern arayüz. **Kurulum gerektirmez**; tek bir `.exe`.
+## Features
 
-## Kurulum
+- **Stream your PC's audio to the speaker** — YouTube, Spotify, games, anything playing on the PC comes out of the Musaic over Wi-Fi.
+- **Spotify & YouTube Music, one click** — route *only* that app to the speaker while games, Discord etc. stay on your headphones (per-app audio routing).
+- **Lossless file playback** — MP3, FLAC, WAV, M4A, OGG… with drag and drop.
+- **High quality** — up to 192 kHz / 24-bit streaming, a studio-grade windowed-sinc resampler (SNR > 105 dB), and a bit-exact "maximum quality" mode.
+- **Low latency** — close to Bluetooth, with an adjustable safety buffer.
+- **Volume, mute, play/pause** control and a live **"is there any sound?" signal indicator**.
+- **Always-on music hub mode** — start with Windows, run in the system tray, start streaming automatically and recover by itself if the speaker reboots. Turn a spare mini PC into a Spotify-to-Musaic bridge.
+- Modern dark UI, **no installation**: a single small `.exe`.
 
-1. [Releases](../../releases) sayfasından `MusaicKontrol.exe`'yi indirin **veya** kendiniz derleyin (aşağıda).
-2. Çalıştırın. Windows Güvenlik Duvarı sorarsa **izin verin** (hoparlör yayını bilgisayardan çeker).
-3. Program hoparlörü ağda kendisi bulur.
+## Getting started
 
-### Kaynaktan derleme
+1. Download `MusaicKontrol.exe` from the [Releases](../../releases) page — **or** build it yourself (below).
+2. Run it. If Windows Firewall asks, **allow access** (the speaker pulls the audio stream from your PC).
+3. The app discovers the speaker on your network automatically.
 
-Hiçbir şey kurmanıza gerek yok; Windows'un içindeki .NET Framework derleyicisi kullanılır:
+### Building from source
+
+Nothing to install: it uses the C# compiler that ships with the .NET Framework built into Windows.
 
 ```bat
 derle.bat
 ```
 
-## Hoparlörü Wi-Fi'ye bağlamak (resmi uygulama olmadan)
+(`derle` = "build". The output is `MusaicKontrol.exe`.)
 
-Hoparlör ağda görünmüyorsa Wi-Fi ayarı silinmiş olabilir:
+## Connecting the speaker to Wi-Fi without the official app
 
-1. Hoparlörün **WPS** tuşuna **5–10 saniye basılı tutun** → hoparlör `Musaic_xxxxxx` adlı şifresiz bir kurulum ağı yayınlar.
-2. Bilgisayarı veya telefonu bu ağa bağlayın, tarayıcıda **`http://172.19.42.1`** adresini açın.
-3. Hoparlöre bir isim verin → ev Wi-Fi ağınızı seçin → şifreyi girin → **Connect**.
-4. Hoparlörü **kapatıp açın** (kurulumdan sonra ses gelmezse bu gerekli).
+If the speaker doesn't show up on your network, its Wi-Fi settings may have been lost:
 
-> Not: Birçok operatör modeminde WPS kapalıdır; yukarıdaki tarayıcı yöntemi her zaman çalışır.
+1. **Hold the speaker's WPS button for 5–10 seconds** → it starts an open setup network named `Musaic_xxxxxx`.
+2. Join that network from a PC or phone and open **`http://172.19.42.1`** in a browser.
+3. Give the speaker a name → pick your home Wi-Fi → enter the password → **Connect**.
+4. **Power-cycle the speaker** (needed if there's no sound right after setup).
 
-## Kullanım ipuçları
+> Many ISP routers have WPS disabled, so pressing WPS on both devices often does nothing. The browser method above always works.
 
-| Durum | Çözüm |
+## Troubleshooting
+
+| Problem | Fix |
 |---|---|
-| Ses gelmiyor, "Çal" sekmesinde "○ … şu an ses yok" yazıyor | Program yalnızca **Ayarlar → Musaic'e gönderilecek ses aygıtı**'nda seçili aygıtın sesini gönderir. Çalan uygulamanın sesini o aygıta verin (Windows ses menüsünden çıkışı o aygıt yapın ya da Müzik sekmesindeki Spotify/YouTube Music düğmelerini kullanın). |
-| Ses gelmiyor, "● Ses geliyor" yazıyor | Hoparlörü kapatıp açın; telefon Bluetooth ile bağlıysa Bluetooth'u kapatın (Bluetooth ağ sesinin önüne geçer); hoparlörün ses seviyesini kontrol edin. |
-| Program kapanıp açılınca / hoparlör yeniden başlayınca ses kesiliyor | Ayarlar → **Yayını otomatik başlat ve koru** açık olsun (varsayılan açık): yayın en geç ~15 sn'de kendiliğinden toparlanır. |
-| Ses arada kesilip ~3 sn geriden geliyor | Ayarlar → **Güvenlik payı**'nı 100–200 ms artırın. |
-| Gecikme fazla | Güvenlik payını azaltın; "192 kHz / 24-bit" biçimini kullanın. |
-| Yalnızca belirli uygulamaların sesi gitsin | Sanal bir ses aygıtı kullanın (ör. [VB-Audio Virtual Cable](https://vb-audio.com/Cable/) veya Steam yüklüyse "Steam Streaming Speakers") ve Ayarlar → Ses'ten seçin. |
+| No sound and the **Çal (Play)** tab says "○ … şu an ses yok" (*no sound on this device*) | The app only sends audio from the device selected in **Ayarlar (Settings) → Musaic'e gönderilecek ses aygıtı** (*audio device to send to Musaic*). Make the playing app output to that device (Windows sound menu), or use the Spotify / YouTube Music buttons on the **Müzik (Music)** tab. |
+| No sound but it says "● Ses geliyor" (*sound detected*) | Power-cycle the speaker; disconnect any phone connected over **Bluetooth** (Bluetooth takes priority over network audio); check the speaker volume. |
+| Sound stops after restarting the app or the speaker | Enable **Ayarlar → Yayını otomatik başlat ve koru** (*auto-start and keep streaming*, on by default) — the stream recovers within ~15 s. |
+| Audio drops out, then continues ~3 s behind | Increase **Güvenlik payı** (*safety buffer*) by 100–200 ms. When its buffer runs dry, the Musaic re-buffers about 3 seconds. |
+| Too much latency | Lower the safety buffer; use the "192 kHz / 24-bit" format. |
+| Send only certain apps to the speaker | Use a virtual audio device, e.g. [VB-Audio Virtual Cable](https://vb-audio.com/Cable/) or "Steam Streaming Speakers" if Steam is installed, and select it in Settings. |
 
-### Işık durumları (kılavuza göre)
+### Speaker status light (from the owner's manual)
 
-- **Mavi**: açık · **Mor**: ağ beklemesi · **Kırmızı**: tam bekleme · **×** tuşunun ışığı: sessiz.
+**Blue**: on · **Purple**: network standby · **Red**: full standby · light on the **×** button: muted.
 
-### Spotify hakkında
+### About Spotify
 
-Hoparlörün kendi **Spotify Connect** desteği (2016 sürümü) Spotify tarafından artık kabul edilmiyor. Bu program bunun yerine bilgisayardaki Spotify'ın sesini hoparlöre iletir; telefondan **Spotify → Cihazlar → bilgisayarınız** seçilerek kontrol edilebilir. Sürekli açık bir bilgisayar (mini PC) ile ana bilgisayar kapalıyken de çalışır — bkz. [MINIPC_KURULUM.md](MINIPC_KURULUM.md).
+The speaker's built-in **Spotify Connect** (a 2016 SDK) is no longer accepted by Spotify — the app shows it as unsupported. Instead, this app routes the Spotify desktop app's audio to the speaker, and you can still control it from your phone via **Spotify → Devices → your PC**. With an always-on mini PC this works even when your main computer is off — see the setup guide [MINIPC_KURULUM.md](MINIPC_KURULUM.md) (Turkish).
 
-## Nasıl çalışır?
+## How it works
 
-- Hoparlör, ağda bir **UPnP MediaRenderer** (AVTransport + RenderingControl) olarak bulunur (SSDP).
-- PC sesi Windows **WASAPI loopback** ile yakalanır, programın içindeki küçük HTTP sunucusundan kesintisiz WAV akışı olarak sunulur; hoparlöre `SetAVTransportURI` + `Play` gönderilir.
-- Uygulama başına yönlendirme Windows'un "uygulama ses tercihleri" özelliğini kullanır.
+- The speaker is discovered via **SSDP** as a **UPnP MediaRenderer** (AVTransport + RenderingControl).
+- PC audio is captured with Windows **WASAPI loopback**, resampled/encoded, and served as an endless WAV stream from a small HTTP server built into the app; the speaker is told to play it with `SetAVTransportURI` + `Play`.
+- The Musaic is very sensitive to buffer underruns (it re-buffers ~3 s), so the stream is fed smoothly, the server backlog is capped and an optional safety buffer is sent up front.
+- Per-app routing uses the Windows "app volume and device preferences" feature.
 
-## Lisans ve sorumluluk reddi
+The speaker's hardware is a Qualcomm **AllPlay** module (CUS227) running OpenWrt, which is why its setup page is a LuCI web UI at `172.19.42.1`. Other AllPlay-based speakers may work too — reports are welcome.
 
-MIT lisansı. Bu proje Musaic Ltd. ile ilişkili değildir; "Musaic" adı yalnızca uyumluluğu belirtmek için kullanılmıştır.
+## Contributing
 
----
+Issues and pull requests are welcome — especially:
+- an **English (or other language) UI**,
+- test reports from **MP10 / MPL** and other AllPlay / DLNA speakers.
 
-### English summary
+## License & disclaimer
 
-**Musaic Kontrol** is a free, open-source Windows app that replaces the discontinued official Musaic app for Musaic MP5/MP10/MPL Wi-Fi speakers. It finds the speaker via UPnP/DLNA, streams your PC's audio (WASAPI loopback, up to 192 kHz/24-bit, low latency), plays local files losslessly, controls volume, and can route only Spotify or YouTube Music to the speaker. No install needed — build with `derle.bat` (uses the .NET Framework compiler built into Windows) or grab the release `.exe`. To re-join the speaker to Wi-Fi without the app: hold WPS 5–10 s, join the `Musaic_xxxxxx` network, open `http://172.19.42.1`, pick your Wi-Fi, then power-cycle the speaker. The UI is in Turkish.
+MIT License. This project is not affiliated with or endorsed by Musaic Ltd.; the name "Musaic" is used only to describe compatibility.
