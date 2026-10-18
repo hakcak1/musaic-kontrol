@@ -2,6 +2,8 @@
 
 **Musaic MP5 / MP10 / MPL Wi-Fi hoparlörleri için resmi uygulamanın yerini tutan, ücretsiz ve açık kaynak Windows kontrol programı.**
 
+![Musaic Kontrol ekran görüntüsü](docs/ekran-goruntusu.png)
+
 Musaic şirketi kapandı ve resmi "Musaic" uygulaması artık çalışmıyor. Ama hoparlörlerin içindeki ağ çalar hâlâ sağlam: standart **UPnP/DLNA** ile kontrol edilebiliyor. Bu program onu kullanır.
 
 *(English summary at the bottom.)*
