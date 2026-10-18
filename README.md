@@ -46,7 +46,9 @@ Hoparlör ağda görünmüyorsa Wi-Fi ayarı silinmiş olabilir:
 
 | Durum | Çözüm |
 |---|---|
-| Ses gelmiyor | Hoparlörü kapatıp açın; telefon Bluetooth ile bağlıysa Bluetooth'u kapatın (Bluetooth ağ sesinin önüne geçer). |
+| Ses gelmiyor, "Çal" sekmesinde "○ … şu an ses yok" yazıyor | Program yalnızca **Ayarlar → Musaic'e gönderilecek ses aygıtı**'nda seçili aygıtın sesini gönderir. Çalan uygulamanın sesini o aygıta verin (Windows ses menüsünden çıkışı o aygıt yapın ya da Müzik sekmesindeki Spotify/YouTube Music düğmelerini kullanın). |
+| Ses gelmiyor, "● Ses geliyor" yazıyor | Hoparlörü kapatıp açın; telefon Bluetooth ile bağlıysa Bluetooth'u kapatın (Bluetooth ağ sesinin önüne geçer); hoparlörün ses seviyesini kontrol edin. |
+| Program kapanıp açılınca / hoparlör yeniden başlayınca ses kesiliyor | Ayarlar → **Yayını otomatik başlat ve koru** açık olsun (varsayılan açık): yayın en geç ~15 sn'de kendiliğinden toparlanır. |
 | Ses arada kesilip ~3 sn geriden geliyor | Ayarlar → **Güvenlik payı**'nı 100–200 ms artırın. |
 | Gecikme fazla | Güvenlik payını azaltın; "192 kHz / 24-bit" biçimini kullanın. |
 | Yalnızca belirli uygulamaların sesi gitsin | Sanal bir ses aygıtı kullanın (ör. [VB-Audio Virtual Cable](https://vb-audio.com/Cable/) veya Steam yüklüyse "Steam Streaming Speakers") ve Ayarlar → Ses'ten seçin. |

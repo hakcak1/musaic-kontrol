@@ -520,6 +520,29 @@ namespace MusaicKontrol
         int cushionMs = 400;
         bool loadingSources;
         bool ytRouted, spRouted;
+        long lastSoundTicks;
+        Label lblSignal;
+        System.Windows.Forms.Timer signalTimer;
+
+        // Yayın açıkken kaynak aygıtta gerçekten ses olup olmadığını gösterir
+        void UpdateSignal()
+        {
+            if (lblSignal == null) return;
+            if (playMode != "live" || !capture.IsRunning) { lblSignal.Text = ""; return; }
+            double ago = (DateTime.UtcNow.Ticks - Interlocked.Read(ref lastSoundTicks)) / (double)TimeSpan.TicksPerSecond;
+            if (ago < 1.5)
+            {
+                lblSignal.Text = "●  Ses geliyor";
+                lblSignal.ForeColor = Theme.Good;
+            }
+            else
+            {
+                var d = cmbSource.SelectedItem as AudioDevice;
+                string src = d == null || d.Id == null ? "Windows'un varsayılan çıkışında" : "'" + ShortName(d.Name) + "' aygıtında";
+                lblSignal.Text = "○  " + src + " şu an ses yok — çalan uygulamanın sesini oraya yönlendirin";
+                lblSignal.ForeColor = Theme.Sub;
+            }
+        }
         DarkToggle tglAutoRun, tglTray, tglAutoStream, tglAutoSpotify;
         NotifyIcon tray;
         bool startHidden, reallyExit, autoStreamStarted;
@@ -691,7 +714,16 @@ namespace MusaicKontrol
             spotifyTimer.Tick += (s, e) => CheckSpotify();
             spotifyTimer.Start();
 
-            capture.OnData = b => server.Push(b);
+            capture.OnData = b =>
+            {
+                server.Push(b);
+                // Sinyal göstergesi için kabaca tepe seviyesi (her 8 örnekte bir bakmak yeterli)
+                for (int i = 0; i < b.Length; i += 8)
+                    if (b[i] > 0.002f || b[i] < -0.002f) { Interlocked.Exchange(ref lastSoundTicks, DateTime.UtcNow.Ticks); break; }
+            };
+            signalTimer = new System.Windows.Forms.Timer { Interval = 500 };
+            signalTimer.Tick += (s, e) => UpdateSignal();
+            signalTimer.Start();
             capture.OnDeviceChanged = (id, rateChanged) =>
             {
                 Log("Yakalanan aygıt değişti → " + DeviceName(id) + " (" + capture.SampleRate + " Hz)");
@@ -819,6 +851,8 @@ namespace MusaicKontrol
             btnPlay = SmallRound(now, Theme.IcoPlay, 198, 172, "Devam");
             btnPause = SmallRound(now, Theme.IcoPause, 250, 172, "Duraklat");
             btnStop = SmallRound(now, Theme.IcoStop, 302, 172, "Durdur");
+            lblSignal = Theme.Lbl(now, "", Theme.Semi(9f), Theme.Sub, 360, 184, 340, 20);
+            lblSignal.AutoEllipsis = true;
             btnPlay.Click += (s, e) => { userStopped = false; Act("Devam", () => AvT("Play", "<InstanceID>0</InstanceID><Speed>1</Speed>")); };
             btnPause.Click += (s, e) => Act("Duraklat", () => AvT("Pause", "<InstanceID>0</InstanceID>"));
             btnStop.Click += (s, e) => StopAll();
@@ -1042,7 +1076,7 @@ namespace MusaicKontrol
             tglAutoSpotify = NewToggle(c4, "Spotify'ı her zaman Musaic'e gönder", "Bu bilgisayarda Spotify çaldığı anda sesi Musaic'e yönlendirilir.", 234);
             tglAutoRun.SetSilently(AutoRunEnabled());
             tglTray.SetSilently(GetOpt("tepsi", false));
-            tglAutoStream.SetSilently(GetOpt("oto_yayin", false));
+            tglAutoStream.SetSilently(GetOpt("oto_yayin", true));
             tglAutoSpotify.SetSilently(GetOpt("oto_spotify", false));
             tglAutoRun.CheckedChanged += (s, e) => SetAutoRun(tglAutoRun.Checked);
             tglTray.CheckedChanged += (s, e) => { SetOpt("tepsi", tglTray.Checked); tray.Visible = tglTray.Checked || startHidden; };
@@ -1311,7 +1345,7 @@ namespace MusaicKontrol
             SetSpeakerStatus("Bağlı", Theme.Good);
             try { Directory.CreateDirectory(SettingsDir); File.WriteAllText(LastDeviceFile, r.Location); } catch { }
             CheckSpotify();
-            if (GetOpt("oto_yayin", false) && !autoStreamStarted && playMode == "none")
+            if (GetOpt("oto_yayin", true) && !autoStreamStarted && playMode == "none")
             {
                 autoStreamStarted = true;
                 Log("Otomatik yayın başlatılıyor…");
@@ -1503,7 +1537,7 @@ namespace MusaicKontrol
                         if (state != "TRANSITIONING") lastState = state;
 
                         // Otomatik yayın açıksa ve yayın düştüyse (ör. hoparlör yeniden başladı) 12 sn sonra toparla
-                        bool shouldStream = GetOpt("oto_yayin", false) && !userStopped && (playMode == "live" || playMode == "none");
+                        bool shouldStream = GetOpt("oto_yayin", true) && !userStopped && (playMode == "live" || playMode == "none");
                         if (shouldStream && state != "PLAYING" && state != "TRANSITIONING")
                         {
                             if (stoppedSince == DateTime.MaxValue) stoppedSince = DateTime.Now;
